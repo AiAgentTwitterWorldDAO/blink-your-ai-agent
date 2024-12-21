@@ -4,7 +4,8 @@ import { createApp } from "vue";
 import "./reset.css";
 
 export default defineContentScript({
-  matches: ['*://x.com/**'],
+  // matches: ['*://x.com/**'],
+  matches: ["*://*/*"],
   cssInjectionMode: "ui",
 
   async main(ctx) {
@@ -15,17 +16,60 @@ export default defineContentScript({
     });
     console.log("Done!");
 
-    const ui = await defineOverlay(ctx);
+    addProfileBtn();
 
+    const ui = await defineOverlay(ctx);
     // Mount initially
     ui.mount();
-
     // Re-mount when page changes
     ctx.addEventListener(window, "wxt:locationchange", (event) => {
       ui.mount();
     });
   },
 });
+
+const addProfileBtn = () => {
+  let href = ''
+  let interval = 0
+  const startInjectProfileBtnInterval = () => {
+    console.log('====> startInjectProfileBtnInterval :')
+    let intervalTimes = 1
+    const maxInterverTimes = 4
+    const intervalTimeSpan = 500
+    interval = setInterval(() => {
+      if (intervalTimes > maxInterverTimes) {
+        console.log('====> startInjectProfileBtnInterval abortInject :', intervalTimes)
+        clearInterval(interval)
+        return
+      }
+      intervalTimes++
+
+      // detect user profile website
+      // const profileInTwitter = document.querySelector('[data-testid="UserProfileHeader_Items"]')
+      // if (!profileInTwitter) return
+
+      // const userUrl = document.querySelector('[data-testid="UserUrl"]')
+      // console.log('====> userurl :', userUrl.innerText)
+
+      // add a button
+
+
+      clearInterval(interval)
+    }, intervalTimeSpan)
+  }
+
+  // check href change interval
+  setInterval(() => {
+    if (href==='' || href !== location.href) {
+      href = location.href
+      if (interval) {
+        console.log('====> clearInterval in setInterval :', interval)
+        clearInterval(interval)
+      }
+      startInjectProfileBtnInterval()
+    }
+  }, 500)
+}
 
 function defineOverlay(ctx: ContentScriptContext) {
   return createShadowRootUi(ctx, {
