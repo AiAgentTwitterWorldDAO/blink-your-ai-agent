@@ -123,26 +123,21 @@ function addProfileBtn() {
       }
       intervalTimes++
 
-      const descInTwitter = document.querySelector('[data-testid="UserDescription"]')
-      if (!descInTwitter) return
+      const descNode = document.querySelector('[data-testid="UserDescription"]')
+      console.log("get UserDescription", descNode)
 
-      const descText = descInTwitter.innerText
-      const index = descText.indexOf('rwa-wallet.com')
-      if (index === -1) return
-      
-      let nftId = descText.substr(index).replace('rwa-wallet.com/', '')
-      nftId = nftId.split(' ')[0]
-      // if (!nftId) return
-      profileId.value = nftId
-      console.log('====> descText, nftId :', descText, nftId)
-      const usernameNode = document.querySelector('[data-testid="UserName"]')
-      const avatarRowNode = usernameNode.previousSibling
+      const profileNode = document.querySelector('[data-testid="UserProfileHeader_Items"]')
+      console.log("get profileNode", profileNode)
 
       clearInterval(interval)
 
-      const parentNode = avatarRowNode?.lastChild
-      const firstChild = parentNode.firstChild
-      parentNode.insertBefore(container, firstChild)
+      const parent = descNode?.parentNode?.parentNode?.parentNode
+      const target = profileNode?.parentNode
+      console.log("get parent", parent)
+      console.log("get target", target)
+      if (parent && target) {
+        parent.insertBefore(container, target)
+      }
     }, intervalTimeSpan)
   }
 
@@ -183,7 +178,7 @@ function defineBuy(ctx: ContentScriptContext) {
     position: "inline",
     zIndex: 99999,
     onMount(container, _shadow, shadowHost) {
-      addProfileBtn(container, _shadow, shadowHost);
+      addProfileBtn();
     },
     onRemove(app) {
       app.unmount();

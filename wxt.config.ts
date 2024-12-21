@@ -13,6 +13,6 @@ export default defineConfig({
     ],
   },
   runner: {
-    startUrls: ["https://www.baidu.com"],
+    startUrls: ["http://localhost:56719/"],
   },
 });
