@@ -13,6 +13,6 @@ export default defineConfig({
     ],
   },
   runner: {
-    startUrls: ["http://localhost:56719/"],
+    startUrls: ["http://localhost:3000"],
   },
 });
