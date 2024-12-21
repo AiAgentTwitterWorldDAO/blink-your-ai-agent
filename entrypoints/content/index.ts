@@ -1,5 +1,6 @@
 import { ContentScriptContext } from "wxt/client";
 import App from "./App.vue";
+import BuyButton from "./Button.vue";
 import { createApp } from "vue";
 import "./reset.css";
 
@@ -16,9 +17,7 @@ export default defineContentScript({
     });
     console.log("Done!");
 
-    addProfileBtn();
-
-    const ui = await defineOverlay(ctx);
+    const ui = await defineBuy(ctx);
     // Mount initially
     ui.mount();
     // Re-mount when page changes
@@ -28,7 +27,7 @@ export default defineContentScript({
   },
 });
 
-const addProfileBtn = () => {
+function addProfileBtn(container: HTMLElement, _shadow: ShadowRoot, shadowHost: HTMLElement) {
   let href = ''
   let interval = 0
   const startInjectProfileBtnInterval = () => {
@@ -51,10 +50,12 @@ const addProfileBtn = () => {
       // const userUrl = document.querySelector('[data-testid="UserUrl"]')
       // console.log('====> userurl :', userUrl.innerText)
 
-      // add a button
-
-
       clearInterval(interval)
+      // add a button
+      const app = createApp(BuyButton);
+      app.mount(container);
+      shadowHost.style.pointerEvents = "none";
+      return app;
     }, intervalTimeSpan)
   }
 
@@ -84,6 +85,20 @@ function defineOverlay(ctx: ContentScriptContext) {
     },
     onRemove(app) {
       app?.unmount();
+    },
+  });
+}
+
+function defineBuy(ctx: ContentScriptContext) {
+  return createShadowRootUi(ctx, {
+    name: "buy-button",
+    position: "inline",
+    zIndex: 99999,
+    onMount(container, _shadow, shadowHost) {
+      addProfileBtn(container, _shadow, shadowHost);
+    },
+    onRemove(app) {
+      app.unmount();
     },
   });
 }
